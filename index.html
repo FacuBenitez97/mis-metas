@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Hábitos">
-<meta name="theme-color" content="#f7f6f3">
+<meta name="theme-color" content="#f7f6f3" id="meta-theme-color">
 <title>Seguimiento de Hábitos</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -21,14 +21,14 @@
   --amber:#b45309;--amber-bg:#fffbeb;--amber-border:#fcd34d;--amber-chip:#d97706;
   --r:10px;--rs:6px;--font:'DM Sans',system-ui,sans-serif
 }
-@media(prefers-color-scheme:dark){:root{
+html.dark{
   --bg:#141412;--surface:#1e1d1b;--surface2:#27261f;--border:#2e2d27;--border2:#3d3c35;
   --text:#f0ede8;--text2:#9a9690;--text3:#5c5a54;
   --accent:#6096ff;--accent-bg:#1a2340;--accent-border:#2d3f70;
   --green:#4ade80;--red:#f87171;--red-bg:#2d0a0a;
   --amber:#fbbf24;--amber-bg:#1c1500;--amber-border:#92400e;--amber-chip:#f59e0b
-}}
-html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased}
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
 #layout{display:flex;min-height:100vh}
 #sidebar{width:196px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.25rem 0;position:sticky;top:0;height:100vh}
 #main{flex:1;min-width:0;overflow-y:auto}
@@ -266,11 +266,69 @@ input:checked+.rem-slider::before{transform:translateX(16px)}
 .sb-signout{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--rs);border:none;background:none;cursor:pointer;font-family:var(--font);font-size:12px;color:var(--text3);width:100%;text-align:left;transition:color .12s}
 .sb-signout:hover{color:var(--text)}
 
+/* DARK MODE TOGGLE */
+.theme-toggle{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--rs);border:none;background:none;cursor:pointer;font-family:var(--font);font-size:12px;color:var(--text2);width:100%;text-align:left;transition:color .12s,background .12s}
+.theme-toggle:hover{background:var(--surface2);color:var(--text)}
+.theme-icon{font-size:14px;width:16px;text-align:center;flex-shrink:0;transition:transform .3s}
+.theme-toggle:active .theme-icon{transform:rotate(30deg) scale(1.15)}
+
+/* NOTES / IDEAS */
+.notes-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.notes-hdr h2{font-size:17px;font-weight:500}
+.notes-toolbar{display:flex;gap:6px;align-items:center}
+.notes-search{border:1px solid var(--border);border-radius:var(--rs);padding:7px 10px;font-size:12px;font-family:var(--font);background:var(--bg);color:var(--text);outline:none;width:160px;transition:border-color .15s}
+.notes-search:focus{border-color:var(--accent)}
+.notes-search::placeholder{color:var(--text3)}
+.btn-new-note{display:flex;align-items:center;gap:5px;background:var(--text);color:var(--bg);border:none;border-radius:var(--rs);padding:7px 14px;font-size:12px;font-family:var(--font);font-weight:500;cursor:pointer;transition:opacity .12s;white-space:nowrap}
+.btn-new-note:hover{opacity:.85}
+.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:1rem}
+.note-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:box-shadow .15s,border-color .15s;position:relative;min-height:100px}
+.note-card:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.note-card.pinned{border-color:var(--accent-border);background:var(--accent-bg)}
+.note-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.note-card-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4;word-break:break-word;flex:1}
+.note-card-title:empty::after{content:'Sin título';color:var(--text3)}
+.note-pin{background:none;border:none;cursor:pointer;font-size:13px;color:var(--text3);padding:0;line-height:1;transition:color .12s;flex-shrink:0}
+.note-pin:hover,.note-pin.active{color:var(--accent)}
+.note-card-body{font-size:12px;color:var(--text2);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;word-break:break-word;flex:1}
+.note-card-footer{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:auto}
+.note-card-date{font-size:10px;color:var(--text3)}
+.note-card-label{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.note-card-actions{display:flex;gap:2px;opacity:0;transition:opacity .15s}
+.note-card:hover .note-card-actions{opacity:1}
+.notes-empty{text-align:center;padding:3rem 1rem;color:var(--text3);font-size:13px}
+.notes-empty-icon{font-size:32px;margin-bottom:8px;opacity:.5}
+
+/* NOTE EDIT MODAL */
+.note-modal-sheet{background:var(--surface);border-radius:16px 16px 0 0;padding:1.25rem;padding-bottom:calc(1.25rem + env(safe-area-inset-bottom,0px));width:100%;max-width:600px;max-height:85vh;display:flex;flex-direction:column}
+.note-edit-title{width:100%;border:none;background:none;font-size:16px;font-weight:500;font-family:var(--font);color:var(--text);outline:none;padding:4px 0;margin-bottom:8px}
+.note-edit-title::placeholder{color:var(--text3)}
+.note-edit-body{width:100%;border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;font-size:13px;font-family:var(--font);background:var(--bg);color:var(--text);outline:none;resize:vertical;min-height:140px;line-height:1.6;flex:1}
+.note-edit-body:focus{border-color:var(--accent)}
+.note-edit-footer{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.note-label-pick{display:flex;gap:5px;align-items:center;margin-left:auto}
+.note-label-dot{width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .12s,transform .12s}
+.note-label-dot:hover{transform:scale(1.15)}
+.note-label-dot.active{border-color:var(--text)}
+.note-label-dot.none-dot{background:var(--border2);position:relative}
+.note-label-dot.none-dot::after{content:'×';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);line-height:1}
+
 @media(max-width:480px){
   #app{padding:.75rem}
   .day-name{font-size:8px}.day-num{font-size:12px}.chip-txt{font-size:8px}.cal-grid{gap:3px}
   .dtog{width:30px;height:30px;font-size:9px}
   .finput-row{flex-direction:column}
+  
+  /* Ideas Mobile Layout */
+  .notes-hdr{flex-direction:column;align-items:stretch;gap:12px}
+  .notes-toolbar{width:100%;flex-direction:column;align-items:stretch;gap:8px}
+  .notes-search{width:100%}
+  .btn-new-note{width:100%;justify-content:center;padding:10px}
+  .notes-grid{grid-template-columns:1fr;gap:8px}
+  
+  /* Modal Mobile Layout */
+  .note-edit-footer{flex-direction:column;align-items:stretch;gap:8px}
+  .note-label-pick{margin-left:0;justify-content:center;width:100%;padding-top:4px}
 }
 </style>
 </head>
@@ -306,6 +364,10 @@ input:checked+.rem-slider::before{transform:translateX(16px)}
     </button>
   </div>
   <div class="sb-bottom">
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
+      <span class="theme-icon" id="theme-icon">☀️</span>
+      <span id="theme-label">Modo claro</span>
+    </button>
     <div class="sb-user" id="sb-user-email"></div>
     <button class="sb-signout" onclick="doSignOut()">↩ Cerrar sesión</button>
   </div>
@@ -400,7 +462,27 @@ input:checked+.rem-slider::before{transform:translateX(16px)}
 </div>
 
 <div id="ideas-section" style="display:none">
-  <div style="padding:3rem 0;text-align:center;color:var(--text3);font-size:14px">Próximamente: Ideas</div>
+  <div class="notes-hdr">
+    <h2>Mis Notas</h2>
+    <div class="notes-toolbar">
+      <input class="notes-search" id="notes-search" type="text" placeholder="Buscar notas..." oninput="renderNotes()">
+      <button class="btn-new-note" onclick="createNewNote()">+ Nueva nota</button>
+    </div>
+  </div>
+  <div id="notes-list"></div>
+</div>
+
+<!-- NOTE EDIT MODAL -->
+<div class="modal-ov" id="note-edit-modal">
+  <div class="note-modal-sheet" onclick="event.stopPropagation()">
+    <input class="note-edit-title" id="ne-title" placeholder="Título de la nota..." maxlength="100">
+    <textarea class="note-edit-body" id="ne-body" rows="8" placeholder="Escribí tu nota aquí..."></textarea>
+    <div class="note-edit-footer">
+      <button class="modal-save" onclick="saveCurrentNote()">Guardar</button>
+      <button class="modal-sec" onclick="closeNoteEditModal()">Cancelar</button>
+      <div class="note-label-pick" id="ne-labels"></div>
+    </div>
+  </div>
 </div>
 
 </div><!-- /app -->
@@ -464,9 +546,9 @@ const MS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Sep
 const MSH=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
 /* ===== STATE ===== */
-let habits=[],completions={},tasks=[],weekOff=0,monthOff=0,view='today';
+let habits=[],completions={},tasks=[],notes=[],weekOff=0,monthOff=0,view='today';
 let editMode=false,openStats=new Set(),selCat='salud',selDays=[0,1,2,3,4,5,6];
-let mHid=null,mKey=null,tmId=null;
+let mHid=null,mKey=null,tmId=null,currentNoteId=null;
 let firedReminders=new Set();
 
 /* ===== HELPERS ===== */
@@ -534,7 +616,7 @@ auth.onAuthStateChanged(async user=>{
     currentUser=null;
     if(syncUnsub){syncUnsub();syncUnsub=null;}
     document.getElementById('auth-overlay').style.display='flex';
-    habits=[];completions={};tasks=[];
+    habits=[];completions={};tasks=[];notes=[];
   }
 });
 
@@ -543,8 +625,8 @@ function setupSync(){
   syncUnsub=db.collection('users').doc(currentUser.uid).onSnapshot(doc=>{
     if(doc.exists&&!doc.metadata.hasPendingWrites){
       const d=doc.data();
-      habits=d.habits||[];completions=d.completions||{};tasks=d.tasks||[];
-      render();
+      habits=d.habits||[];completions=d.completions||{};tasks=d.tasks||[];notes=d.notes||[];
+      render();renderNotes();
     }
   });
 }
@@ -554,7 +636,7 @@ async function save(){
   if(!currentUser)return;
   try{
     await db.collection('users').doc(currentUser.uid).set(
-      {habits,completions,tasks,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},
+      {habits,completions,tasks,notes,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},
       {merge:true}
     );
   }catch(e){console.error('save error:',e);}
@@ -563,7 +645,7 @@ async function load(){
   if(!currentUser)return;
   try{
     const doc=await db.collection('users').doc(currentUser.uid).get();
-    if(doc.exists){const d=doc.data();habits=d.habits||[];completions=d.completions||{};tasks=d.tasks||[];}
+    if(doc.exists){const d=doc.data();habits=d.habits||[];completions=d.completions||{};tasks=d.tasks||[];notes=d.notes||[];}
     habits=habits.map(h=>({catId:'otro',...h}));
   }catch(e){console.error('load error:',e);}
 }
@@ -913,6 +995,7 @@ function setSection(s){
     document.getElementById(id+'-section').style.display=id===s?'':'none';
     document.getElementById('sb-'+id).classList.toggle('active',id===s);
   });
+  if(s==='ideas')renderNotes();
   closeSidebar();
 }
 function toggleSidebar(){
@@ -928,6 +1011,168 @@ function closeSidebar(){
   document.getElementById('sidebar').classList.remove('sb-open');
   document.getElementById('sb-overlay').classList.remove('open');
 }
+
+/* ===== NOTES / IDEAS ===== */
+const NOTE_COLORS=[
+  {id:'none',color:'transparent',label:'Sin color'},
+  {id:'red',color:'#ef4444',label:'Rojo'},
+  {id:'orange',color:'#f97316',label:'Naranja'},
+  {id:'amber',color:'#f59e0b',label:'Amarillo'},
+  {id:'green',color:'#22c55e',label:'Verde'},
+  {id:'blue',color:'#3b82f6',label:'Azul'},
+  {id:'purple',color:'#a855f7',label:'Violeta'}
+];
+
+function createNewNote(){
+  currentNoteId=null;
+  document.getElementById('ne-title').value='';
+  document.getElementById('ne-body').value='';
+  buildNoteLabels('none');
+  document.getElementById('note-edit-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('ne-title').focus(),100);
+}
+
+function openNoteForEdit(id){
+  const n=notes.find(x=>x.id===id);
+  if(!n)return;
+  currentNoteId=id;
+  document.getElementById('ne-title').value=n.title||'';
+  document.getElementById('ne-body').value=n.content||'';
+  buildNoteLabels(n.label||'none');
+  document.getElementById('note-edit-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('ne-body').focus(),100);
+}
+
+function closeNoteEditModal(){
+  document.getElementById('note-edit-modal').classList.remove('open');
+  currentNoteId=null;
+}
+
+document.getElementById('note-edit-modal').onclick=e=>{
+  if(e.target===document.getElementById('note-edit-modal'))closeNoteEditModal();
+};
+
+function buildNoteLabels(activeId){
+  document.getElementById('ne-labels').innerHTML=NOTE_COLORS.map(c=>
+    `<div class="note-label-dot${c.id===activeId?' active':''}${c.id==='none'?' none-dot':''}" style="${c.id!=='none'?'background:'+c.color:''}" data-label="${c.id}" title="${c.label}" onclick="pickNoteLabel('${c.id}')"></div>`
+  ).join('');
+}
+
+function pickNoteLabel(id){
+  document.querySelectorAll('#ne-labels .note-label-dot').forEach(el=>el.classList.toggle('active',el.dataset.label===id));
+}
+
+function getSelectedLabel(){
+  const el=document.querySelector('#ne-labels .note-label-dot.active');
+  return el?el.dataset.label:'none';
+}
+
+function saveCurrentNote(){
+  const title=document.getElementById('ne-title').value.trim();
+  const content=document.getElementById('ne-body').value.trim();
+  if(!title&&!content)return;
+  const label=getSelectedLabel();
+  const now=new Date().toISOString();
+  if(currentNoteId){
+    const n=notes.find(x=>x.id===currentNoteId);
+    if(n){n.title=title;n.content=content;n.label=label;n.updatedAt=now;}
+  }else{
+    notes.unshift({id:genId(),title,content,label,pinned:false,createdAt:now,updatedAt:now});
+  }
+  save();renderNotes();closeNoteEditModal();
+}
+
+function deleteNote(id,ev){
+  ev.stopPropagation();
+  notes=notes.filter(n=>n.id!==id);
+  save();renderNotes();
+}
+
+function togglePinNote(id,ev){
+  ev.stopPropagation();
+  const n=notes.find(x=>x.id===id);
+  if(n){n.pinned=!n.pinned;save();renderNotes();}
+}
+
+function fmtNoteDate(iso){
+  if(!iso)return'';
+  const d=new Date(iso);
+  const now=new Date();
+  const diff=now-d;
+  if(diff<60000)return'Ahora';
+  if(diff<3600000)return`Hace ${Math.floor(diff/60000)} min`;
+  if(diff<86400000)return`Hace ${Math.floor(diff/3600000)}h`;
+  return`${d.getDate()} ${MSH[d.getMonth()]} ${d.getFullYear()!==now.getFullYear()?d.getFullYear():''}`;
+}
+
+function renderNotes(){
+  const container=document.getElementById('notes-list');
+  if(!container)return;
+  const query=(document.getElementById('notes-search')?.value||'').toLowerCase().trim();
+  let filtered=notes;
+  if(query){
+    filtered=notes.filter(n=>
+      (n.title||'').toLowerCase().includes(query)||
+      (n.content||'').toLowerCase().includes(query)
+    );
+  }
+  // sort: pinned first, then by updatedAt desc
+  const sorted=[...filtered].sort((a,b)=>{
+    if(a.pinned&&!b.pinned)return -1;
+    if(!a.pinned&&b.pinned)return 1;
+    return (b.updatedAt||b.createdAt||'').localeCompare(a.updatedAt||a.createdAt||'');
+  });
+  if(!sorted.length){
+    container.innerHTML=`<div class="notes-empty"><div class="notes-empty-icon">📝</div>${query?'No se encontraron notas':'Todavía no tenés notas.<br>Creá una para empezar.'}</div>`;
+    return;
+  }
+  const labelColor=id=>{const c=NOTE_COLORS.find(x=>x.id===id);return c&&c.id!=='none'?c.color:null;};
+  container.innerHTML='<div class="notes-grid">'+sorted.map(n=>{
+    const lc=labelColor(n.label);
+    const preview=esc(n.content||'').replace(/\n/g,' ');
+    return`<div class="note-card${n.pinned?' pinned':''}" onclick="openNoteForEdit('${n.id}')">
+      <div class="note-card-top">
+        <div class="note-card-title">${esc(n.title||'')}</div>
+        <button class="note-pin${n.pinned?' active':''}" onclick="togglePinNote('${n.id}',event)" title="${n.pinned?'Desfijar':'Fijar'}">📌</button>
+      </div>
+      <div class="note-card-body">${preview}</div>
+      <div class="note-card-footer">
+        <span class="note-card-date">${fmtNoteDate(n.updatedAt||n.createdAt)}</span>
+        <div class="note-card-actions">
+          <button class="ibtn del" onclick="deleteNote('${n.id}',event)" title="Eliminar">×</button>
+        </div>
+        ${lc?`<div class="note-card-label" style="background:${lc}"></div>`:''}
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+/* ===== DARK MODE ===== */
+function getSystemTheme(){return window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';}
+function applyTheme(theme){
+  const isDark=theme==='dark';
+  document.documentElement.classList.toggle('dark',isDark);
+  document.getElementById('theme-icon').textContent=isDark?'🌙':'☀️';
+  document.getElementById('theme-label').textContent=isDark?'Modo oscuro':'Modo claro';
+  const mc=document.getElementById('meta-theme-color');
+  if(mc)mc.setAttribute('content',isDark?'#141412':'#f7f6f3');
+}
+function toggleTheme(){
+  const current=document.documentElement.classList.contains('dark')?'dark':'light';
+  const next=current==='dark'?'light':'dark';
+  localStorage.setItem('theme',next);
+  applyTheme(next);
+}
+// Init theme on load (runs immediately, before auth)
+(function(){
+  const saved=localStorage.getItem('theme');
+  const theme=saved||(getSystemTheme());
+  applyTheme(theme);
+})();
+// Listen for system theme changes (only when no manual preference)
+window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',e=>{
+  if(!localStorage.getItem('theme'))applyTheme(e.matches?'dark':'light');
+});
 
 /* ===== INIT ===== */
 // Auth state drives init — see auth.onAuthStateChanged above
